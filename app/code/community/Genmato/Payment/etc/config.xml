@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<config>
+	<modules>
+		<Genmato_Payment>
+			<version>1.0.0</version>
+		</Genmato_Payment>
+	</modules>
+
+	<global>
+		<models>
+			<genmato_payment>
+				<class>Genmato_Payment_Model</class>
+			</genmato_payment>
+		</models>
+
+		<helpers>
+			<genmato_payment>
+				<class>Genmato_Payment_Helper</class>
+			</genmato_payment>
+		</helpers>
+
+		<events>
+			<sales_model_service_quote_submit_after>
+				<observers>
+					<genmato_payment_model_observer>
+						<type>singleton</type>
+						<class>Genmato_Payment_Model_Observer</class>
+						<method>autoCreateInvoice</method>
+					</genmato_payment_model_observer>
+				</observers>
+			</sales_model_service_quote_submit_after>
+		</events>
+
+	</global>
+</config>
