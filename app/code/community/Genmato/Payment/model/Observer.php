@@ -5,34 +5,35 @@
  * @copyright   Copyright (c) 2013 Genmato BV (http://genmato.com)
  */
 
-class Genmato_Payment_model_Observer {
+class Genmato_Payment_model_Observer
+{
 
-	public function autoCreateInvoice($observer) {
-		$event = $observer->getEvent();
-		$order = $event->getOrder();
+    public function autoCreateInvoice($observer)
+    {
+        $event = $observer->getEvent();
+        $order = $event->getOrder();
 
-		$createInvoice = Mage::getStoreConfigFlag('payment/' . $order->getPayment()->getMethod() . '/create_invoice');
+        $createInvoice = Mage::getStoreConfigFlag('payment/' . $order->getPayment()->getMethod() . '/create_invoice');
 
-		if ($order->getId() && $order->canInvoice() && $createInvoice) {
+        if ($order->getId() && $order->canInvoice() && $createInvoice) {
 
-			$emailInvoice = Mage::getStoreConfigFlag('payment/' . $order->getPayment()->getMethod() . '/email_invoice');
-			$capture_case = Mage::getStoreConfig('payment/' . $order->getPayment()->getMethod() . '/invoice_status');
+            $emailInvoice = Mage::getStoreConfigFlag('payment/' . $order->getPayment()->getMethod() . '/email_invoice');
+            $capture_case = Mage::getStoreConfig('payment/' . $order->getPayment()->getMethod() . '/invoice_status');
 
-			$invoice = $order->prepareInvoice();
-			$invoice->setRequestedCaptureCase($capture_case);
-			$invoice->register();
+            $invoice = $order->prepareInvoice();
+            $invoice->setRequestedCaptureCase($capture_case);
+            $invoice->register();
 
-			Mage::getModel('core/resource_transaction')->addObject($invoice)->addObject($invoice->getOrder())->save();
+            Mage::getModel('core/resource_transaction')->addObject($invoice)->addObject($invoice->getOrder())->save();
 
-			try {
-				$invoice->sendEmail($emailInvoice);
-			}
-			catch (Exception $e) {
-				Mage::logException($e);
-				$this->_getSession()->addError(Mage::helper('genmato_payment')->__('Unable to send the invoice email.'));
-			}
+            try {
+                $invoice->sendEmail($emailInvoice);
+            } catch (Exception $e) {
+                Mage::logException($e);
+                $this->_getSession()->addError(Mage::helper('genmato_payment')->__('Unable to send the invoice email.'));
+            }
 
-			$order->addStatusToHistory($order->getStatus(), Mage::helper('genmato_payment')->__('Invoice created!'));
-		}
-	}
+            $order->addStatusToHistory($order->getStatus(), Mage::helper('genmato_payment')->__('Invoice created!'));
+        }
+    }
 }
