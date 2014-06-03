@@ -2,7 +2,7 @@
 /**
  * @category    Genmato
  * @package     Genmato_Payment
- * @copyright   Copyright (c) 2013 Genmato BV (http://genmato.com)
+ * @copyright   Copyright (c) 2014 Genmato BV (http://genmato.com)
  */
 
 class Genmato_Payment_Model_Method_Abstract extends Mage_Payment_Model_Method_Abstract
@@ -12,6 +12,11 @@ class Genmato_Payment_Model_Method_Abstract extends Mage_Payment_Model_Method_Ab
 
     public function isAvailable($quote = null)
     {
+        // Skip checks if quote is null
+        if (is_null($quote)) {
+            return parent::isAvailable($quote);
+        }
+
         $min_order_amount = Mage::getStoreConfig('payment/' . $this->_code . '/min_order_amount');
         if (!is_numeric($min_order_amount)) {
             $min_order_amount = 0;
@@ -24,7 +29,6 @@ class Genmato_Payment_Model_Method_Abstract extends Mage_Payment_Model_Method_Ab
         if (!is_numeric($max_order_amount)) {
             $max_order_amount = 0;
         }
-
         if ($max_order_amount > 0 && (Mage::app()->getStore()->roundPrice($quote->getGrandTotal()) >= Mage::app()->getStore()->roundPrice($max_order_amount))) {
             return false;
         }
@@ -34,6 +38,13 @@ class Genmato_Payment_Model_Method_Abstract extends Mage_Payment_Model_Method_Ab
             return false;
         }
 
+        $allowed_shipping_method = explode(',', Mage::getStoreConfig('payment/' . $this->_code . '/allow_shipping_method'));
+        $active_shipping_method = $quote->getShippingAddress()->getShippingMethod();
+        if(count($allowed_shipping_method)>0 && !in_array($active_shipping_method,$allowed_shipping_method)){
+            return false;
+        }
+
         return parent::isAvailable($quote);
     }
+
 }
