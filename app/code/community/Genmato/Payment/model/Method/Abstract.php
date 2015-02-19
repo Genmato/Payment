@@ -48,10 +48,12 @@ class Genmato_Payment_Model_Method_Abstract extends Mage_Payment_Model_Method_Ab
         }
 
         // Check if shipping method is allowed
-        $allowed_shipping_method = explode(',', $this->getConfig('allow_shipping_method'));
-        $active_shipping_method = $quote->getShippingAddress()->getShippingMethod();
-        if (count($allowed_shipping_method) > 0 && !in_array($active_shipping_method, $allowed_shipping_method)) {
-            return false;
+        if (trim($this->getConfig('allow_shipping_method'))) {
+            $allowed_shipping_method = explode(',', trim($this->getConfig('allow_shipping_method')));
+            $active_shipping_method = $quote->getShippingAddress()->getShippingMethod();
+            if (count($allowed_shipping_method) > 0 && !in_array($active_shipping_method, $allowed_shipping_method)) {
+                return false;
+            }
         }
 
         return parent::isAvailable($quote);
