@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Genmato_Payment>
-            <version>15.42.1</version>
+            <version>15.292.1</version>
         </Genmato_Payment>
     </modules>
 
@@ -32,4 +32,5 @@
         </events>
 
     </global>
+
 </config>
